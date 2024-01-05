@@ -1,5 +1,5 @@
 """
-Dagger pipelines using the Python SDK for pymaccounting
+Dagger pipelines using the Python SDK for pymaccounter
 """
 
 # referenced with modifications from:

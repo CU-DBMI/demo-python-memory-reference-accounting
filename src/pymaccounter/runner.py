@@ -1,10 +1,10 @@
 """
-Defines runner convenience functions for pymaccounting.
+Defines runner convenience functions for pymaccounter.
 """
 
 import anyio
 
-from pymaccounting.pipeline import test
+from pymaccounter.pipeline import test
 
 
 def run_test(test_to_run: str):
