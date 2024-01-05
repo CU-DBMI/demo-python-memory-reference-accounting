@@ -8,23 +8,24 @@ Dagger pipelines using the Python SDK for pymaccounter
 import sys
 
 import anyio
+from typing import Union, List
 import dagger
 
 
-async def test(test_to_run: str):
+async def test(test_to_run: Union[str, List[str]]):
     """
     Dagger pipeline for running reproducible tests in python.
     """
     async with dagger.Connection(dagger.Config(log_output=sys.stderr)) as client:
         # get reference to the local project
+        dockerfile_dir = client.host().directory(".")
 
         async def test_version(test_to_run: str):
             # build a python container based on Dockerfile
-            print(client.host().directory("."))
             python = (
                 client.container()
                 .build(
-                    context=client.host().directory("."),
+                    context=dockerfile_dir,
                     dockerfile="./build/docker/Dockerfile",
                 )
                 .with_exec(["poetry", "run", "python", test_to_run])
@@ -41,4 +42,4 @@ async def test(test_to_run: str):
         async with anyio.create_task_group() as tg:
             tg.start_soon(test_version, test_to_run)
 
-    print("All tasks have finished")
+    print("All tests have finished")
