@@ -1,5 +1,5 @@
 """
-Module for testing pure Python garbage collection.
+Module for testing Python garbage collection with customized callbacks.
 """
 import gc
 
