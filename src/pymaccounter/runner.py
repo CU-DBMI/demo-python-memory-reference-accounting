@@ -2,12 +2,12 @@
 Defines runner convenience functions for pymaccounter.
 """
 
+from typing import List, Union
+
 import anyio
-
-from typing import Union, List
-from pymaccounter.pipeline import test
-
 import fire
+
+from pymaccounter.pipeline import test
 
 
 def run_test(tests_to_run: Union[str, List[str]]) -> None:

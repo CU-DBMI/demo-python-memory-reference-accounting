@@ -64,3 +64,4 @@ repos:
         # and the way pre-commit references virtual environments.
         additional_dependencies:
           - "dagger-io"
+          - "fire"
