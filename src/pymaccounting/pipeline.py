@@ -11,39 +11,30 @@ import anyio
 import dagger
 
 
-async def test(versions):
+async def test(test_to_run: str):
     """
     Dagger pipeline for running reproducible tests in python.
     """
     async with dagger.Connection(dagger.Config(log_output=sys.stderr)) as client:
         # get reference to the local project
-        src = client.host().directory(".")
 
-        async def test_version(version: str):
+        async def test_version(test_to_run: str):
+            # build a python container based on Dockerfile
             python = (
                 client.container()
-                .from_(f"python:{version}-slim-buster")
-                # mount cloned repository into image
-                .with_mounted_directory("/demo-github-actions", src)
-                # set current working directory for next commands
-                .with_workdir("/demo-github-actions")
-                # install test dependencies
-                .with_exec(["pip", "install", "poetry==1.4"])
-                .with_exec(["poetry", "install"])
-                # run tests
-                .with_exec(["poetry", "run", "python", "-m", "pytest"])
+                .build(context=".", dockerfile="build/docker/Dockerfile")
+                .with_exec(["poetry", "run", "python", test_to_run])
             )
 
-            print(f"Starting tests for Python {version}")
+            print(f"Starting test for {test_to_run}")
 
             # execute
             await python.exit_code()
 
-            print(f"Tests for Python {version} succeeded!")
+            print(f"Tests for {test_to_run} succeeded!")
 
         # when this block exits, all tasks will be awaited (i.e., executed)
         async with anyio.create_task_group() as tg:
-            for version in versions:
-                tg.start_soon(test_version, version)
+            tg.start_soon(test_version, test_to_run)
 
     print("All tasks have finished")
