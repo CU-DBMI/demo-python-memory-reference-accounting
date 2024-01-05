@@ -20,16 +20,20 @@ async def test(test_to_run: str):
 
         async def test_version(test_to_run: str):
             # build a python container based on Dockerfile
+            print(client.host().directory("."))
             python = (
                 client.container()
-                .build(context=".", dockerfile="build/docker/Dockerfile")
+                .build(
+                    context=client.host().directory("."),
+                    dockerfile="./build/docker/Dockerfile",
+                )
                 .with_exec(["poetry", "run", "python", test_to_run])
             )
 
             print(f"Starting test for {test_to_run}")
 
             # execute
-            await python.exit_code()
+            await python.sync()
 
             print(f"Tests for {test_to_run} succeeded!")
 

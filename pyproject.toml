@@ -12,9 +12,6 @@ python = ">=3.10,<4.0"
 dagger-io = "^0.9.5"
 anyio = "^4.2.0"
 
-[tool.poetry.scripts]
-run_test = 'pymaccounter.runner:run_test'
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
