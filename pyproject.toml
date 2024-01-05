@@ -16,4 +16,13 @@ anyio = "^4.2.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.vulture]
+min_confidence = 80
+paths = ["src"]
+sort_by_size = true
+verbose = true
+
+[tool.isort]
+profile = "black"
+
 [tool.setuptools_scm]

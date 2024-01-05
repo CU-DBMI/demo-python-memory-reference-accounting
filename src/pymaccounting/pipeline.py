@@ -6,11 +6,15 @@ Dagger pipelines using the Python SDK for pymaccounting
 # https://docs.dagger.io/sdk/python/628797/get-started
 
 import sys
+
 import anyio
 import dagger
 
 
 async def test(versions):
+    """
+    Dagger pipeline for running reproducible tests in python.
+    """
     async with dagger.Connection(dagger.Config(log_output=sys.stderr)) as client:
         # get reference to the local project
         src = client.host().directory(".")
