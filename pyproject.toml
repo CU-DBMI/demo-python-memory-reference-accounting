@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "demo-python-memory-reference-accounting"
+version = "0.0.1"
+description = "Demonstrating Python memory allocator reference counting and debug."
+authors = ["d33bs <dave.bunten@cuanschutz.edu>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+packages = [{include = "pymaccounter", from="src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+dagger-io = "^0.9.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.setuptools_scm]
