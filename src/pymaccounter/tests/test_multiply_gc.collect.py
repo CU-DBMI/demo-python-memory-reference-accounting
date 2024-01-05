@@ -3,10 +3,13 @@ Module for testing Python garbage collection.
 """
 import gc
 
+# pylint: disable=R0801
 
-# modified example from:
-# https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps
+
 def multiply(a, b):
+    """
+    Basic python function
+    """
     return a * b
 
 

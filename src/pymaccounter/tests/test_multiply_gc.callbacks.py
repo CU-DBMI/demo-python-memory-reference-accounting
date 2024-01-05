@@ -3,10 +3,14 @@ Module for testing Python garbage collection with customized callbacks.
 """
 import gc
 
+# pylint: disable=R0801
 
-# leverage gc.callbacks to show collection start and stop along with info
-# see: https://docs.python.org/3/library/gc.html#gc.callbacks
+
 def info_callback(phase, info):
+    """
+    Leverage gc.callbacks to show collection start and stop along with info
+    see: https://docs.python.org/3/library/gc.html#gc.callbacks
+    """
     if phase == "start":
         print("Garbage collection started. Info: ", info, sep="\n", end="\n\n")
 
@@ -18,9 +22,10 @@ def info_callback(phase, info):
 gc.callbacks.append(info_callback)
 
 
-# modified example from:
-# https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps
 def multiply(a, b):
+    """
+    Basic python function
+    """
     return a * b
 
 

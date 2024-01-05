@@ -3,6 +3,7 @@ Module for testing Python garbage collection with DEBUG_LEAK
 """
 import gc
 
+# pylint: disable=R0801
 
 # set gc to debug leak mode
 # see here for more info:
@@ -10,9 +11,10 @@ import gc
 gc.set_debug(gc.DEBUG_LEAK)
 
 
-# modified example from:
-# https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps
 def multiply(a, b):
+    """
+    Basic python function
+    """
     return a * b
 
 
