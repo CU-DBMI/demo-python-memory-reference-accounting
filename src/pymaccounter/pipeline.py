@@ -12,7 +12,9 @@ import anyio
 import dagger
 
 
-async def test(test_to_run: Union[str, List[str]]):
+async def test(
+    tests_to_run: Union[str, List[str]], test_dir: str = "src/pymaccounter/tests"
+) -> None:
     """
     Dagger pipeline for running reproducible tests in python.
     """
@@ -20,26 +22,32 @@ async def test(test_to_run: Union[str, List[str]]):
         # get reference to the local project
         dockerfile_dir = client.host().directory(".")
 
-        async def test_version(test_to_run: str):
-            # build a python container based on Dockerfile
+        async def test_version(test_to_run: str, test_dir: str):
+            full_test_to_run = f"{test_dir}/{test_to_run}"
+
+            # build a python container based on Dockerfile and run test
             python = (
                 client.container()
                 .build(
                     context=dockerfile_dir,
                     dockerfile="./build/docker/Dockerfile",
                 )
-                .with_exec(["poetry", "run", "python", test_to_run])
+                .with_exec(["poetry", "run", "python", full_test_to_run])
             )
 
-            print(f"Starting test for {test_to_run}")
+            print(f"Starting test for {full_test_to_run}")
 
             # execute
             await python.sync()
 
-            print(f"Tests for {test_to_run} succeeded!")
+            print(f"Tests for {full_test_to_run} succeeded!")
 
         # when this block exits, all tasks will be awaited (i.e., executed)
         async with anyio.create_task_group() as tg:
-            tg.start_soon(test_version, test_to_run)
+            if not isinstance(tests_to_run, list):
+                tests_to_run = [tests_to_run]
+
+            for test_to_run in tests_to_run:
+                tg.start_soon(test_version, test_to_run, test_dir)
 
     print("All tests have finished")
