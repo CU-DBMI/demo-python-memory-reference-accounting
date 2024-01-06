@@ -37,8 +37,8 @@ async def test(
 
             print(f"Starting test for {full_test_to_run}")
 
-            # execute
-            await python.sync()
+            # execute and show the results of the last executed command
+            print(await python.stdout())
 
             print(f"Tests for {full_test_to_run} succeeded!")
 
