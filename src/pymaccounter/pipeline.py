@@ -30,7 +30,7 @@ async def test(
                 client.container()
                 .build(
                     context=dockerfile_dir,
-                    dockerfile="./build/docker/Dockerfile",
+                    dockerfile="./src/pymaccounter/Dockerfile",
                 )
                 .with_exec(["poetry", "run", "python", full_test_to_run])
             )
