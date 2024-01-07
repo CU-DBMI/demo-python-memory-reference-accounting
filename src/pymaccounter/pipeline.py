@@ -13,7 +13,7 @@ import dagger
 
 
 async def test(
-    tests_to_run: Union[str, List[str]], test_dir: str = "src/pymaccounter/tests"
+    tests_to_run: List[str], test_dir: str = "src/pymaccounter/tests"
 ) -> None:
     """
     Dagger pipeline for running reproducible tests in python.
@@ -44,9 +44,6 @@ async def test(
 
         # when this block exits, all tasks will be awaited (i.e., executed)
         async with anyio.create_task_group() as tg:
-            if not isinstance(tests_to_run, list):
-                tests_to_run = [tests_to_run]
-
             for test_to_run in tests_to_run:
                 tg.start_soon(test_version, test_to_run, test_dir)
 
