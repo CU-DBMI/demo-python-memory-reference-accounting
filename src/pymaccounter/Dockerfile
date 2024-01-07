@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir poetry
 COPY . .
 
 # install env from poetry
-RUN poetry install -v --no-interaction
+RUN poetry install --without runner -v --no-interaction
 
 # set an alias for running python through the poetry env
 # hadolint ignore=DL3059
