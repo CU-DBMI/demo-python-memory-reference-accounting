@@ -2,7 +2,7 @@
 Defines runner convenience functions for pymaccounter.
 """
 
-from typing import List, Union
+from typing import List
 
 import anyio
 import fire

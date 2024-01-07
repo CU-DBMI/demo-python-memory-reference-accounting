@@ -6,7 +6,7 @@ Dagger pipelines using the Python SDK for pymaccounter
 # https://docs.dagger.io/sdk/python/628797/get-started
 
 import sys
-from typing import List, Union
+from typing import List
 
 import anyio
 import dagger
