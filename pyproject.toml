@@ -15,6 +15,17 @@ dagger-io = "^0.9.5"
 anyio = "^4.2.0"
 fire = "^0.5.0"
 
+# define poethepoet convenience access
+# to test runner workflow definition
+[tool.poe.tasks.run_all_tests]
+cmd = """
+python src/pymaccounter/runner.py \
+'["test_baseline.py", \
+"test_multiply_gc.collect.py", \
+"test_multiply_gc.debug_leak.py", \
+"test_multiply_gc.callbacks.py"]'
+"""
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
