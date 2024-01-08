@@ -19,5 +19,5 @@ def run_tests(tests_to_run: List[str]) -> None:
 
 
 if __name__ == "__main__":
-    # creats a CLI through Python Fire for run_test
+    # creates a CLI through Python Fire for run_test
     fire.Fire(run_tests)
