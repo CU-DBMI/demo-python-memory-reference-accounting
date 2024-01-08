@@ -27,7 +27,10 @@ async def test(
 
             # build a python container based on Dockerfile and run test
             python = (
-                client.container()
+                client.container(
+                    # explicitly set the container to be a certain platform type
+                    platform=dagger.Platform("linux/amd64")
+                )
                 .build(
                     context=dockerfile_dir,
                     dockerfile="./src/pymaccounter/Dockerfile",
