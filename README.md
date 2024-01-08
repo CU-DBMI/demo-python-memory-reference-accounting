@@ -23,6 +23,7 @@ subgraph test_container["test container"]
 end
 subgraph runner
     runner_env["Python environment\n(for runner)"]
+    runner_cli["Runner CLI\n(Python Fire)"]
     pipeline["Container pipeline\n(through Dagger)"]
 end
 
@@ -32,7 +33,8 @@ pyproject --> |defines| runner_env
 
 test_env --> |runs| test_modules
 test_modules -.-> |display\nresults through| pipeline
-runner_env --> |runs| pipeline
+runner_env --> |enables| runner_cli
+runner_cli --> |runs| pipeline
 
 dockerfile -.-> |defines\ncontainer for| pipeline
 
@@ -43,9 +45,10 @@ poeworkflow -.-> |declarative\nworkflows for| runner
 ```
 
 See above for a quick overview of project components and their relationship.
-[Poetry](https://python-poetry.org/docs/) is used to define Python environment dependencies within dependency groups in a `pyproject.toml` file.
+[Poetry](https://python-poetry.org/docs/) is used to define Python environment dependencies within [dependency groups](https://python-poetry.org/docs/master/managing-dependencies/#dependency-groups) in a `pyproject.toml` file.
 Declarative [Poe the Poet tasks](https://poethepoet.natn.io/index.html) may also be found in the same `pyproject.toml` file to help define reproducible workflows.
-Containerization is used through [Dagger's Python SDK](https://docs.dagger.io/sdk/python/) to help isolate potential OS-specific distinctions for memory allocation work in Python.
+A "runner" command-line interface (CLI) is provided through [Python Fire](https://github.com/google/python-fire) to help enable the use of the container-based pipelines.
+Container-based pipelines are provided through [Dagger's Python SDK](https://docs.dagger.io/sdk/python/) to help isolate potential OS-specific distinctions for memory allocation work in Python.
 Testing workflows are designed to run "locally" within a developer's environment (for example, leveraging [pyenv](https://github.com/pyenv/pyenv), [poetry](https://python-poetry.org/docs/), and [Docker Desktop](https://www.docker.com/products/docker-desktop/)) or within [GitHub Actions images](https://github.com/actions/runner-images) (`dagger-io` installs the necessary dependencies).
 
 ## Development
