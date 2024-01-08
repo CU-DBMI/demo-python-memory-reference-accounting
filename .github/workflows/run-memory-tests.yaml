@@ -1,0 +1,27 @@
+---
+# used for running memory checks through GitHub Actions for open observability
+name: run memory tests
+
+on:
+  push:
+    branches: [build-demonstrations]
+  pull_request:
+    branches: [main]
+
+jobs:
+  run_memory_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Setup poetry and poethepoet
+        run: |
+          python -m pip install poetry poethepoet
+      - name: Install poetry runner env
+        run: |
+          poetry install --with runner -v --no-interaction
+      - name: Run memory tests through Dagger pipeline
+        run: |
+          poetry poe run_all_tests
