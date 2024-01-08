@@ -14,7 +14,7 @@ def run_test(tests_to_run: List[str]) -> None:
     """
     Helper function to run dagger testing pipeline
     """
-    print(tests_to_run)
+
     anyio.run(test, tests_to_run)
 
 

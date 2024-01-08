@@ -40,7 +40,7 @@ async def test(
             # execute and show the results of the last executed command
             print(await python.stdout())
 
-            print(f"Tests for {full_test_to_run} succeeded!")
+            print(f"Tests for {full_test_to_run} complete!")
 
         # when this block exits, all tasks will be awaited (i.e., executed)
         async with anyio.create_task_group() as tg:
