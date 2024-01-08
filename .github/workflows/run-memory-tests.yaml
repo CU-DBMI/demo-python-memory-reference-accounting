@@ -4,7 +4,7 @@ name: run memory tests
 
 on:
   push:
-    branches: [build-demonstrations]
+    branches: [main]
   pull_request:
     branches: [main]
 
