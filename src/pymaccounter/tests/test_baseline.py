@@ -2,4 +2,4 @@
 A baseline test for Python memory
 """
 
-print("hello!")
+print("Hello! This is a quick test of a print statement!")

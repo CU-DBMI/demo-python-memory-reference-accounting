@@ -35,12 +35,9 @@ async def test(
                 .with_exec(["poetry", "run", "python", full_test_to_run])
             )
 
-            print(f"Starting test for {full_test_to_run}")
-
             # execute and show the results of the last executed command
-            print(await python.stdout())
-
-            print(f"Tests for {full_test_to_run} complete!")
+            results = await python.stdout()
+            print(f"Test results for {full_test_to_run}:\n{results}")
 
         # when this block exits, all tasks will be awaited (i.e., executed)
         async with anyio.create_task_group() as tg:
