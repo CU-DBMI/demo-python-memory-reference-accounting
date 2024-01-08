@@ -12,7 +12,7 @@ import anyio
 import dagger
 
 
-async def test(
+async def pipeline_run_tests(
     tests_to_run: List[str], test_dir: str = "src/pymaccounter/tests"
 ) -> None:
     """
@@ -22,7 +22,8 @@ async def test(
         # get reference to the local project
         dockerfile_dir = client.host().directory(".")
 
-        async def test_version(test_to_run: str, test_dir: str):
+        async def run_test(test_to_run: str, test_dir: str):
+            """ """
             full_test_to_run = f"{test_dir}/{test_to_run}"
 
             # build a python container based on Dockerfile and run test
@@ -30,11 +31,12 @@ async def test(
                 client.container(
                     # explicitly set the container to be a certain platform type
                     platform=dagger.Platform("linux/amd64")
-                )
-                .build(
+                ).build(
                     context=dockerfile_dir,
+                    # uses a dockerfile to create the container
                     dockerfile="./src/pymaccounter/Dockerfile",
                 )
+                # run the python test through a poetry environment
                 .with_exec(["poetry", "run", "python", full_test_to_run])
             )
 
@@ -44,7 +46,8 @@ async def test(
 
         # when this block exits, all tasks will be awaited (i.e., executed)
         async with anyio.create_task_group() as tg:
+            # run each test provided individually
             for test_to_run in tests_to_run:
-                tg.start_soon(test_version, test_to_run, test_dir)
+                tg.start_soon(run_test, test_to_run, test_dir)
 
     print("All tests have finished")
