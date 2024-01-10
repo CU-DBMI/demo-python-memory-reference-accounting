@@ -51,6 +51,28 @@ A "runner" command-line interface (CLI) is provided through [Python Fire](https:
 Container-based pipelines are provided through [Dagger's Python SDK](https://docs.dagger.io/sdk/python/) to help isolate potential OS-specific distinctions for memory allocation work in Python.
 Testing workflows are designed to run "locally" within a developer's environment (for example, leveraging [pyenv](https://github.com/pyenv/pyenv), [poetry](https://python-poetry.org/docs/), and [Docker Desktop](https://www.docker.com/products/docker-desktop/)) or within [GitHub Actions images](https://github.com/actions/runner-images) (`dagger-io` installs the necessary dependencies).
 
+## Definitions
+
+### Memory Allocator
+
+Computer memory management often occurs through the use of a "memory allocator" which controls how computer memory resources are used.
+This usually occurs through __"allocation"__, computer memory resource reservation (taking memory), and __"deallocation"__, computer memory resource freeing (giving back memory for other uses).
+
+### Garbage Collection
+
+"Garbage collection (GC)" is used to describe a type of automated memory management within software development.
+"The _garbage collector_ attempts to reclaim memory which was allocated by the program, but is no longer referenced; such memory is called _garbage_." ([Wikipedia: Garbage collection (computer science)](<https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)>)).
+A garbage collector often works in tandem with a memory allocator to help control computer memory resource usage in software development.
+
+### Python's Garbage Collection Interface (`gc`)
+
+The `gc` module provides an interface to Python garbage collection.
+
+## Test Cases
+
+This project focuses on leveraging Python memory observability tools to illustrate what happens as code is executed.
+See below for more information on specifics regarding each test case and the technologies used for these.
+
 ## Development
 
 The following are suggested steps to get started with development for this project.
@@ -59,3 +81,4 @@ The following are suggested steps to get started with development for this proje
 1. [Install Poetry](https://python-poetry.org/docs/#installation)
 1. [Install Docker Desktop](https://www.docker.com/products/docker-desktop/)
 1. Run Poe the Poet workflow(s): e.g. `poetry run poe run_all_tests`
+   _(Poe the Poet is installed as a Poetry env dependency for the `runner` group)_
