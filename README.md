@@ -55,8 +55,7 @@ Testing workflows are designed to run "locally" within a developer's environment
 
 The following are suggested steps to get started with development for this project.
 
-1. Install Python from [pyenv](https://github.com/pyenv/pyenv?tab=readme-ov-file#installation)
+1. (Suggested) Install Python from [pyenv](https://github.com/pyenv/pyenv?tab=readme-ov-file#installation) (or another way).
 1. [Install Poetry](https://python-poetry.org/docs/#installation)
-1. [Install Poe the Poet](https://poethepoet.natn.io/installation.html)
 1. [Install Docker Desktop](https://www.docker.com/products/docker-desktop/)
-1. Run Poe the Poet workflow(s): e.g. `poetry poe run_all_tests`
+1. Run Poe the Poet workflow(s): e.g. `poetry run poe run_all_tests`

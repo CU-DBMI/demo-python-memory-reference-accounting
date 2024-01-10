@@ -18,10 +18,10 @@ jobs:
           python-version: "3.11"
       - name: Setup poetry and poethepoet
         run: |
-          python -m pip install poetry poethepoet
+          python -m pip install poetry
       - name: Install poetry runner env
         run: |
           poetry install --with runner -v --no-interaction
       - name: Run memory tests through Dagger pipeline
         run: |
-          poetry poe run_all_tests
+          poetry run poe run_all_tests
