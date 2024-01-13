@@ -79,6 +79,7 @@ High-level languages such as Python often remove the requirement for software de
 Python code is executed by the Python [interpreter](<https://en.wikipedia.org/wiki/Interpreter_(computing)>).
 Memory is managed for Python software processes automatically (when unspecified) or manually (when specified) through the Python interpreter.
 The ___Python memory manager___ manages memory through a private heap for Python software processes through the Python interpreter and CPython ([Python: Memory Management](https://docs.python.org/3/c-api/memory.html)).
+From a high-level perspective, we assume variables and other operations written in Python will automatically allocate memory through the Python interpreter when executed.
 
 ### Garbage Collection
 
