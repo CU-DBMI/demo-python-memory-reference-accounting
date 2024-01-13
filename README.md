@@ -53,14 +53,36 @@ Testing workflows are designed to run "locally" within a developer's environment
 
 ## Definitions
 
+### Computer Memory
+
+Computer memory, also sometimes known as "RAM" or "random-access memory", is a type of resource used by computer software on a computer.
+"Computer memory stores information, such as data and programs for immediate use in the computer. ... Main memory operates at a high speed compared to \[non-memory\] storage which is slower but less expensive and \[oftentimes\] higher in capacity. " ([Wikipedia: Computer memory](https://en.wikipedia.org/wiki/Computer_memory)).
+Computer memory is generally organized as ___heaps___ which help describe chunks of the total memory available on a computer.
+These heaps may be ___private___ (only available to a specific software process) or ___shared___ (available to one or many software processes).
+
 ### Memory Allocator
 
-Computer memory management often occurs through the use of a "memory allocator" which controls how computer memory resources are used.
-This usually occurs through __"allocation"__, computer memory resource reservation (taking memory), and __"deallocation"__, computer memory resource freeing (giving back memory for other uses).
+Memory management is a concept which helps enable the shared use of computer memory to avoid challenges such as memory overuse (where all memory is in use and never shared to other software).
+Computer memory management often occurs through the use of a ___memory allocator___ which controls how computer memory resources are used.
+Computer software can be written to interact with memory allocators to use computer memory.
+Memory allocators may be used manually (with specific directions provided on when and how to use memory resources) or automatically (with an algorithmic approach of some kind).
+The memory allocator usually performs the following actions with memory:
+
+- __"Allocation"__: computer memory resource reservation (taking memory). This is sometimes also known as "`malloc`", or "memory allocate".
+- __"Deallocation"__: computer memory resource freeing (giving back memory for other uses). This is sometimes also known as "`free`", or "freeing memory from allocation".
+
+### Python's Memory Manager
+
+Python is an interpreted "high-level" programming language ([Python: What is Python?](https://www.python.org/doc/essays/blurb/)).
+Interpreted languages are those which include an "interpreter" which helps execute code written in a particular way ([Wikipedia: Interpreter (computing)](<https://en.wikipedia.org/wiki/Interpreter_(computing)>)).
+High-level languages such as Python often remove the requirement for software developers to manually perform memory management ([Wikipedia: High-level programming language](https://en.wikipedia.org/wiki/High-level_programming_language)).
+Python code is executed by the Python [interpreter](<https://en.wikipedia.org/wiki/Interpreter_(computing)>).
+Memory is managed for Python software processes automatically (when unspecified) or manually (when specified) through the Python interpreter.
+The ___Python memory manager___ manages memory through a private heap for Python software processes through the Python interpreter and CPython ([Python: Memory Management](https://docs.python.org/3/c-api/memory.html)).
 
 ### Garbage Collection
 
-"Garbage collection (GC)" is used to describe a type of automated memory management within software development.
+"Garbage collection (GC)" is used to describe a type of automated memory management.
 "The _garbage collector_ attempts to reclaim memory which was allocated by the program, but is no longer referenced; such memory is called _garbage_." ([Wikipedia: Garbage collection (computer science)](<https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)>)).
 A garbage collector often works in tandem with a memory allocator to help control computer memory resource usage in software development.
 
