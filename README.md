@@ -60,6 +60,14 @@ Computer memory, also sometimes known as "RAM" or "random-access memory", is a t
 Computer memory is generally organized as ___heaps___ which help describe chunks of the total memory available on a computer.
 These heaps may be ___private___ (only available to a specific software process) or ___shared___ (available to one or many software processes).
 
+#### Python and Computer Memory
+
+Python is an interpreted "high-level" programming language ([Python: What is Python?](https://www.python.org/doc/essays/blurb/)).
+Interpreted languages are those which include an "interpreter" which helps execute code written in a particular way ([Wikipedia: Interpreter (computing)](<https://en.wikipedia.org/wiki/Interpreter_(computing)>)).
+High-level languages such as Python often remove the requirement for software developers to manually perform memory management ([Wikipedia: High-level programming language](https://en.wikipedia.org/wiki/High-level_programming_language)).
+Python code is executed by a commonly pre-packaged and downloaded binary call the Python [interpreter](<https://en.wikipedia.org/wiki/Interpreter_(computing)>).
+The Python interpreter reads Python code and performs memory management as the code is executed.
+
 ### Memory Allocator
 
 Memory management is a concept which helps enable the shared use of computer memory to avoid challenges such as memory overuse (where all memory is in use and never shared to other software).
@@ -73,10 +81,6 @@ The memory allocator usually performs the following actions with memory:
 
 #### Python's Memory Manager
 
-Python is an interpreted "high-level" programming language ([Python: What is Python?](https://www.python.org/doc/essays/blurb/)).
-Interpreted languages are those which include an "interpreter" which helps execute code written in a particular way ([Wikipedia: Interpreter (computing)](<https://en.wikipedia.org/wiki/Interpreter_(computing)>)).
-High-level languages such as Python often remove the requirement for software developers to manually perform memory management ([Wikipedia: High-level programming language](https://en.wikipedia.org/wiki/High-level_programming_language)).
-Python code is executed by the Python [interpreter](<https://en.wikipedia.org/wiki/Interpreter_(computing)>).
 Memory is managed for Python software processes automatically (when unspecified) or manually (when specified) through the Python interpreter.
 The ___Python memory manager___ manages memory through a private heap for Python software processes through the Python interpreter and CPython ([Python: Memory Management](https://docs.python.org/3/c-api/memory.html)).
 From a high-level perspective, we assume variables and other operations written in Python will automatically allocate memory through the Python interpreter when executed.
@@ -94,11 +98,6 @@ Python by default uses an optional garbage collector to automatically deallocate
 The [`gc` module](https://docs.python.org/3/library/gc.html) provides an interface to the Python garbage collector.
 In addition, the [`sys` module](https://docs.python.org/3/library/sys.html) provides many functions which provide information about references and other details about Python objects as they are executed through the interpreter.
 
-## Test Cases
-
-This project focuses on leveraging Python memory observability tools to illustrate what happens as code is executed.
-See below for more information on specifics regarding each test case and the technologies used for these.
-
 ## Development
 
 The following are suggested steps to get started with development for this project.
@@ -108,3 +107,26 @@ The following are suggested steps to get started with development for this proje
 1. [Install Docker Desktop](https://www.docker.com/products/docker-desktop/)
 1. Run Poe the Poet workflow(s): e.g. `poetry run poe run_all_tests`
    _(Poe the Poet is installed as a Poetry env dependency for the `runner` group)_
+
+## Test Modules
+
+This project focuses on leveraging Python memory observability tools to illustrate what happens as code is executed.
+See the `src/pymaccounter/tests` folder for a full list of test modules.
+Each test module includes a description of what it tests and expects in a [docstring](https://docs.python.org/3/glossary.html#term-docstring) near the top of the file.
+
+### Running Test Modules
+
+Test modules may be executed individually or in groups.
+Test modules are provided in a list to be run by containerized pipelines.
+Each test provided in this way is run in an isolated container instance.
+
+In addition to test module specification, a test module base directory and debug mode may also be specified.
+The test module base directory is where the container pipeline will look for test modules listed by name in the list.
+Debug mode may be used to view container pipeline debug log messages.
+
+See the following examples for more details on the suggested way to run tests through this project.
+
+- Individual test: `poetry run python src/pymaccounter/runner.py '["test_baseline.py"]'`
+- Multiple tests: `poetry run python src/pymaccounter/runner.py '["test_baseline.py", "test_multiply_gc.collect.py"]'`
+- Individual test with debug mode: `poetry run python src/pymaccounter/runner.py '["test_baseline.py"]' --debug True`
+- Individual test with non-default base test directory specification: `poetry run python src/pymaccounter/runner.py '["test_baseline.py"]' --test_dir 'src/another_test_dir'`
