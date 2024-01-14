@@ -14,9 +14,7 @@ import dagger
 
 
 async def pipeline_run_tests(
-    tests_to_run: List[str],
-    test_dir: str = "src/pymaccounter/tests",
-    debug: bool = False,
+    tests_to_run: List[str], test_dir: str, debug: bool
 ) -> None:
     """
     Dagger pipeline for running reproducible tests in python.
