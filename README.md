@@ -60,30 +60,16 @@ Computer memory, also sometimes known as "RAM" or "random-access memory", is a t
 Computer memory is generally organized as ___heaps___ which help describe chunks of the total memory available on a computer.
 These heaps may be ___private___ (only available to a specific software process) or ___shared___ (available to one or many software processes).
 
-#### Python and Computer Memory
-
-Python is an interpreted "high-level" programming language ([Python: What is Python?](https://www.python.org/doc/essays/blurb/)).
-Interpreted languages are those which include an "interpreter" which helps execute code written in a particular way ([Wikipedia: Interpreter (computing)](<https://en.wikipedia.org/wiki/Interpreter_(computing)>)).
-High-level languages such as Python often remove the requirement for software developers to manually perform memory management ([Wikipedia: High-level programming language](https://en.wikipedia.org/wiki/High-level_programming_language)).
-Python code is executed by a commonly pre-packaged and downloaded binary call the Python [interpreter](<https://en.wikipedia.org/wiki/Interpreter_(computing)>).
-The Python interpreter reads Python code and performs memory management as the code is executed.
-
 ### Memory Allocator
 
 Memory management is a concept which helps enable the shared use of computer memory to avoid challenges such as memory overuse (where all memory is in use and never shared to other software).
 Computer memory management often occurs through the use of a ___memory allocator___ which controls how computer memory resources are used.
 Computer software can be written to interact with memory allocators to use computer memory.
 Memory allocators may be used manually (with specific directions provided on when and how to use memory resources) or automatically (with an algorithmic approach of some kind).
-The memory allocator usually performs the following actions with memory:
+The memory allocator usually performs the following actions with memory (in addition to others):
 
-- __"Allocation"__: computer memory resource reservation (taking memory). This is sometimes also known as "`malloc`", or "memory allocate".
+- __"Allocation"__: computer memory resource reservation (taking memory). This is sometimes also known as "`alloc`", or "allocate memory".
 - __"Deallocation"__: computer memory resource freeing (giving back memory for other uses). This is sometimes also known as "`free`", or "freeing memory from allocation".
-
-#### Python's Memory Manager
-
-Memory is managed for Python software processes automatically (when unspecified) or manually (when specified) through the Python interpreter.
-The ___Python memory manager___ manages memory through a private heap for Python software processes through the Python interpreter and CPython ([Python: Memory Management](https://docs.python.org/3/c-api/memory.html)).
-From a high-level perspective, we assume variables and other operations written in Python will automatically allocate memory through the Python interpreter when executed.
 
 ### Garbage Collection
 
@@ -91,7 +77,34 @@ From a high-level perspective, we assume variables and other operations written 
 "The _garbage collector_ attempts to reclaim memory which was allocated by the program, but is no longer referenced; such memory is called _garbage_." ([Wikipedia: Garbage collection (computer science)](<https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)>)).
 A garbage collector often works in tandem with a memory allocator to help control computer memory resource usage in software development.
 
-#### Python's Garbage Collection
+### Python and Computer Memory
+
+Python is an interpreted "high-level" programming language ([Python: What is Python?](https://www.python.org/doc/essays/blurb/)).
+Interpreted languages are those which include an "interpreter" which helps execute code written in a particular way ([Wikipedia: Interpreter (computing)](<https://en.wikipedia.org/wiki/Interpreter_(computing)>)).
+High-level languages such as Python often remove the requirement for software developers to manually perform memory management ([Wikipedia: High-level programming language](https://en.wikipedia.org/wiki/High-level_programming_language)).
+Python code is executed by a commonly pre-packaged and downloaded binary call the Python [interpreter](<https://en.wikipedia.org/wiki/Interpreter_(computing)>).
+The Python interpreter reads Python code and performs memory management as the code is executed.
+
+#### Python's Memory Manager
+
+Memory is managed for Python software processes automatically (when unspecified) or manually (when specified) through the Python interpreter.
+The ___Python memory manager___ is an abstraction which manages memory for Python software processes through the Python interpreter and CPython ([Python: Memory Management](https://docs.python.org/3/c-api/memory.html)).
+From a high-level perspective, we assume variables and other operations written in Python will automatically allocate and deallocate memory through the Python interpreter when executed.
+Python's memory manager performs this work through various __memory allocators__ and a __garbage collector__ (or as configured with customizations).
+
+##### Python's Memory Allocator(s)
+
+The Python memory manager allocates memory for use through memory allocators.
+Python may use one or many memory allocators depending on specifications in Python code and how the Python interpreter is configured (for example, see [Python: Memory Management - Default Memory Allocators](https://docs.python.org/3/c-api/memory.html#default-memory-allocators)).
+One way to understand Python memory allocators is through the following distinctions.
+
+- "Python Memory Allocator" (`pymalloc`):
+  The Python interpreter is packaged with a specialized memory allocator called `pymalloc`.
+  "Python has a pymalloc allocator optimized for small objects (smaller or equal to 512 bytes) with a short lifetime." ([Python: Memory Management - The pymalloc allocator](https://docs.python.org/3/c-api/memory.html#the-pymalloc-allocator))
+  `pymalloc` may be disabled through the use of a special environment variable called [`PYTHONMALLOC`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONMALLOC) (for example, to use only [`malloc`](https://en.wikipedia.org/wiki/C_dynamic_memory_allocation) as seen below).
+- C dynamic memory allocator (`malloc`)
+
+##### Python's Garbage Collection
 
 Python by default uses an optional garbage collector to automatically deallocate garbage memory through the Python interpreter in CPython.
 "The main garbage collection algorithm used by CPython is reference counting. The basic idea is that CPython counts how many different places there are that have a reference to an object. Such a place could be another object, or a global (or static) C variable, or a local variable in some C function. When an object’s reference count becomes zero, the object is deallocated." ([Python Developer's Guide: Garbage collector design](https://devguide.python.org/internals/garbage-collector/))
