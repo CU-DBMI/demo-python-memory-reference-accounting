@@ -55,10 +55,12 @@ Testing workflows are designed to run "locally" within a developer's environment
 
 ### Computer Memory
 
-Computer memory, also sometimes known as "RAM" or "random-access memory", is a type of resource used by computer software on a computer.
+Computer memory, also sometimes known as "RAM" or "random-access memory", or "dynamic memory" is a type of resource used by computer software on a computer.
 "Computer memory stores information, such as data and programs for immediate use in the computer. ... Main memory operates at a high speed compared to \[non-memory\] storage which is slower but less expensive and \[oftentimes\] higher in capacity. " ([Wikipedia: Computer memory](https://en.wikipedia.org/wiki/Computer_memory)).
+
 Computer memory is generally organized as ___heaps___ which help describe chunks of the total memory available on a computer.
 These heaps may be ___private___ (only available to a specific software process) or ___shared___ (available to one or many software processes).
+Heaps can be further segmented into ___pools___ which are areas of the heap which can be used for specific purposes (for example, when multiple memory allocators are used).
 
 ### Memory Allocator
 
@@ -98,18 +100,38 @@ The Python memory manager allocates memory for use through memory allocators.
 Python may use one or many memory allocators depending on specifications in Python code and how the Python interpreter is configured (for example, see [Python: Memory Management - Default Memory Allocators](https://docs.python.org/3/c-api/memory.html#default-memory-allocators)).
 One way to understand Python memory allocators is through the following distinctions.
 
-- "Python Memory Allocator" (`pymalloc`):
+- __"Python Memory Allocator" (`pymalloc`)__
   The Python interpreter is packaged with a specialized memory allocator called `pymalloc`.
   "Python has a pymalloc allocator optimized for small objects (smaller or equal to 512 bytes) with a short lifetime." ([Python: Memory Management - The pymalloc allocator](https://docs.python.org/3/c-api/memory.html#the-pymalloc-allocator))
-  `pymalloc` may be disabled through the use of a special environment variable called [`PYTHONMALLOC`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONMALLOC) (for example, to use only [`malloc`](https://en.wikipedia.org/wiki/C_dynamic_memory_allocation) as seen below).
-- C dynamic memory allocator (`malloc`)
+- __C dynamic memory allocator (`malloc`)__
+  When `pymalloc` is disabled or a memory requirements exceed `pymalloc`'s constraints, the Python interpreter will use a function from the [C standard library](https://en.wikipedia.org/wiki/C_standard_library) called [`malloc`](<%5B%60malloc%60%5D(https://en.wikipedia.org/wiki/C_dynamic_memory_allocation)>).
+  When `malloc` is used by the Python interpreter, it uses the system's existing implementation of `malloc`.
+
+`pymalloc` may be disabled through the use of a special environment variable called [`PYTHONMALLOC`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONMALLOC) (for example, to use only [`malloc`](https://en.wikipedia.org/wiki/C_dynamic_memory_allocation) as seen below).
+This same environment variable may be used with `debug` settings in order to help troubleshoot in-depth questions.
+
+__Notable Additions__
+
+Python provides the capability of customizing memory allocation through the use of packages.
+See below for some notable examples of additional memory allocation possibilities.
+
+- __NumPy Memory Allocation__
+  [NumPy](https://numpy.org/) [uses custom C-API's](https://numpy.org/doc/stable/reference/c-api/data_memory.html) which are backed by C dynamic memory allocation functions (`alloc`, `free`, `realloc`) to help address memory management.
+  These interfaces can be controlled directly through NumPy to help manage memory effectively when using the package.
+- __PyArrow Memory Allocators__
+  [PyArrow](https://arrow.apache.org/) provides the capability to use `malloc`, [`jemalloc`](https://github.com/jemalloc/jemalloc), or [`mimalloc`](https://github.com/microsoft/mimalloc) through the [PyArrow Memory Pools group of functions](https://arrow.apache.org/docs/python/api/memory.html#memory-pools).
+  A default memory allocator is selected for use when PyArrow based on the operating system and the availability of the memory allocator on the system.
+  The selection of a memory allocator for use with PyArrow can be influenced by how it performs on a particular system.
 
 ##### Python's Garbage Collection
 
 Python by default uses an optional garbage collector to automatically deallocate garbage memory through the Python interpreter in CPython.
 "The main garbage collection algorithm used by CPython is reference counting. The basic idea is that CPython counts how many different places there are that have a reference to an object. Such a place could be another object, or a global (or static) C variable, or a local variable in some C function. When an object’s reference count becomes zero, the object is deallocated." ([Python Developer's Guide: Garbage collector design](https://devguide.python.org/internals/garbage-collector/))
+Python's garbage collector is generally focused on collecting garbage created by `pymalloc` and `malloc`.
+
 The [`gc` module](https://docs.python.org/3/library/gc.html) provides an interface to the Python garbage collector.
 In addition, the [`sys` module](https://docs.python.org/3/library/sys.html) provides many functions which provide information about references and other details about Python objects as they are executed through the interpreter.
+These functions and other packages can help software developers observe memory behaviors within Python procedures.
 
 ## Development
 
