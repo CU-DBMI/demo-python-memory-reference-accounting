@@ -55,18 +55,73 @@ Testing workflows are designed to run "locally" within a developer's environment
 
 ### Computer Memory
 
+```mermaid
+flowchart LR
+
+subgraph computer ["Computer (resources)"]
+  memory["Memory"]
+  storage["Data Storage"]
+  cpu["CPU(s)"]
+end
+
+style computer fill:#fff,stroke:#333
+style storage fill:#fff,stroke:#333
+style cpu fill:#fff,stroke:#333
+style memory fill:#86EFAC,stroke:#333
+```
+
+_Computer memory is a type of computer resource available for use by software on a computer_
+
 Computer memory, also sometimes known as "RAM" or "random-access memory", or "dynamic memory" is a type of resource used by computer software on a computer.
 "Computer memory stores information, such as data and programs for immediate use in the computer. ... Main memory operates at a high speed compared to \[non-memory\] storage which is slower but less expensive and \[oftentimes\] higher in capacity. " ([Wikipedia: Computer memory](https://en.wikipedia.org/wiki/Computer_memory)).
 
-Computer memory is generally organized as ___heaps___ which help describe chunks of the total memory available on a computer.
+```mermaid
+flowchart LR
+
+subgraph computer ["Computer (resources)"]
+
+subgraph memory["Memory"]
+    subgraph heap1 ["heap 1"]
+        direction TB
+        poola["pool a"]
+        poolb["pool b"]
+    end
+    subgraph heap2 ["heap 2"]
+        poola2["pool c"]
+    end
+end
+
+end
+
+style computer fill:#fff,stroke:#333
+style memory fill:#86EFAC,stroke:#333
+```
+
+_Memory heaps help organize available memory on a computer for specific procedures. Heaps may have one or many memory pools._
+
+Computer memory is generally organized as ___heaps___ which help describe chunks of the total memory available on a computer for specific processes.
 These heaps may be ___private___ (only available to a specific software process) or ___shared___ (available to one or many software processes).
 Heaps can be further segmented into ___pools___ which are areas of the heap which can be used for specific purposes (for example, when multiple memory allocators are used).
 
 ### Memory Allocator
 
+```mermaid
+sequenceDiagram
+
+software ->> allocator:"I need some memory, please!"
+allocator ->> memory:Allocate portion of  memory for use
+memory ->> allocator:Allocated memory for use
+allocator ->> software:"Here's some memory to use!"
+
+software ->> allocator:"I'm finished with that memory!"
+allocator ->> memory:Free the memory for other purposes.
+```
+
+_Memory allocators help software reserve and free computer memory resources._
+
 Memory management is a concept which helps enable the shared use of computer memory to avoid challenges such as memory overuse (where all memory is in use and never shared to other software).
-Computer memory management often occurs through the use of a ___memory allocator___ which controls how computer memory resources are used.
-Computer software can be written to interact with memory allocators to use computer memory.
+Computer memory management often occurs through the use of a ___memory allocator___ which controls how computer memory resources are used for software.
+Computer software is written to interact with memory allocators to use computer memory.
 Memory allocators may be used manually (with specific directions provided on when and how to use memory resources) or automatically (with an algorithmic approach of some kind).
 The memory allocator usually performs the following actions with memory (in addition to others):
 
@@ -75,11 +130,51 @@ The memory allocator usually performs the following actions with memory (in addi
 
 ### Garbage Collection
 
+```mermaid
+sequenceDiagram
+
+participant software
+participant memory allocator
+participant garbage collector
+participant memory
+
+software ->> memory allocator:"I need some memory, please!"
+memory allocator ->> memory:Allocate portion of  memory for use
+memory ->> memory allocator:Allocated memory for use
+memory allocator ->> software:"Here's some memory to use!"
+
+software -->> garbage collector :(software finishes with memory usage, sometimes implicitly)
+garbage collector  ->> memory:Free the memory for other purposes.
+```
+
+_Garbage collectors help free computer memory which is no longer referenced by software._
+
 "Garbage collection (GC)" is used to describe a type of automated memory management.
 "The _garbage collector_ attempts to reclaim memory which was allocated by the program, but is no longer referenced; such memory is called _garbage_." ([Wikipedia: Garbage collection (computer science)](<https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)>)).
 A garbage collector often works in tandem with a memory allocator to help control computer memory resource usage in software development.
 
 ### Python and Computer Memory
+
+```mermaid
+flowchart LR
+
+subgraph computer ["Computer"]
+  direction LR
+  memory["Memory"]
+  code["Python code"]
+  interpreter["Python interpreter"]
+end
+
+code --> |interpreted and\nexecuted by| interpreter
+interpreter <--> |allocates memory\nfor processed code| memory
+
+style computer fill:#fff,stroke:#333
+style memory fill:#86EFAC,stroke:#333
+style code fill:#67E8F9,stroke:#333;
+style interpreter fill:#FDBA74,stroke:#333;
+```
+
+_The Python interpreter helps execute Python code and allocate memory for Python procedures._
 
 Python is an interpreted "high-level" programming language ([Python: What is Python?](https://www.python.org/doc/essays/blurb/)).
 Interpreted languages are those which include an "interpreter" which helps execute code written in a particular way ([Wikipedia: Interpreter (computing)](<https://en.wikipedia.org/wiki/Interpreter_(computing)>)).
@@ -89,12 +184,69 @@ The Python interpreter reads Python code and performs memory management as the c
 
 #### Python's Memory Manager
 
+```mermaid
+flowchart LR
+
+subgraph computer ["Computer"]
+  direction LR
+  memory["Memory"]
+  code["Python code"]
+  subgraph interpreter["Python interpreter"]
+    manager["Python memory manager"]
+  end
+end
+
+code --> |interpreted and\nexecuted by| interpreter
+manager --> |allocates memory\nfor processed code| memory
+
+style computer fill:#fff,stroke:#333
+style memory fill:#86EFAC,stroke:#333
+style code fill:#67E8F9,stroke:#333;
+style manager fill:#FDBA74,stroke:#333;
+```
+
+_The Python memory manager helps manage memory for Python code executed by the Python interpreter._
+
 Memory is managed for Python software processes automatically (when unspecified) or manually (when specified) through the Python interpreter.
 The ___Python memory manager___ is an abstraction which manages memory for Python software processes through the Python interpreter and CPython ([Python: Memory Management](https://docs.python.org/3/c-api/memory.html)).
 From a high-level perspective, we assume variables and other operations written in Python will automatically allocate and deallocate memory through the Python interpreter when executed.
 Python's memory manager performs this work through various __memory allocators__ and a __garbage collector__ (or as configured with customizations).
 
-##### Python's Memory Allocator(s)
+##### Python's Memory Allocators
+
+```mermaid
+flowchart LR
+
+subgraph computer ["Computer"]
+  direction LR
+  memory["Memory"]
+  code["Python code"]
+  malloc["malloc\n(system function)"]
+  subgraph interpreter ["Python interpreter"]
+    subgraph spacer [" "]
+        subgraph mgr ["Python memory manager"]
+            pymalloc["pymalloc"]
+        end
+    end
+  end
+end
+
+code --> |interpreted and\nexecuted by| interpreter
+pymalloc --> |"allocates memory for\nsmall and temporary needs"| memory
+mgr --> |"allocates memory for\nlarger or long-lived needs"| malloc
+malloc --> memory
+
+
+style computer fill:#fff,stroke:#333
+style memory fill:#86EFAC,stroke:#333
+style code fill:#67E8F9,stroke:#333;
+style mgr fill:#FDBA74,stroke:#333;
+style pymalloc fill:#FBBF24,stroke:#333;
+style malloc fill:#FBBF24,stroke:#333;
+style spacer stroke:none;
+```
+
+_The Python memory manager by default will use `pymalloc` internally or malloc from the system to allocate computer memory resources._
 
 The Python memory manager allocates memory for use through memory allocators.
 Python may use one or many memory allocators depending on specifications in Python code and how the Python interpreter is configured (for example, see [Python: Memory Management - Default Memory Allocators](https://docs.python.org/3/c-api/memory.html#default-memory-allocators)).
@@ -110,7 +262,52 @@ One way to understand Python memory allocators is through the following distinct
 `pymalloc` may be disabled through the use of a special environment variable called [`PYTHONMALLOC`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONMALLOC) (for example, to use only [`malloc`](https://en.wikipedia.org/wiki/C_dynamic_memory_allocation) as seen below).
 This same environment variable may be used with `debug` settings in order to help troubleshoot in-depth questions.
 
-__Notable Additions__
+__Additional Python Memory Allocators__
+
+```mermaid
+flowchart LR
+
+subgraph computer ["Computer"]
+  direction LR
+  memory["Memory"]
+  code["Python code"]
+  malloc["malloc\n(system function)"]
+  subgraph interpreter ["Python interpreter"]
+    subgraph spacer [" "]
+        subgraph mgr ["Python memory manager"]
+            pymalloc["pymalloc"]
+        end
+    end
+    package_managed["Python package\nmanaged allocators\n(ex. NumPy, PyArrow, etc.)"]
+  end
+  mimalloc["mimalloc"]
+  jemalloc["jemalloc"]
+end
+
+code --> |interpreted and\nexecuted by| interpreter
+pymalloc <--> |"allocates memory for\nsmall and temporary needs"| memory
+mgr --> |"allocates memory for\nlarger or long-lived needs"| malloc
+malloc --> memory
+code -.-> |may stipulate\nthe use of| package_managed
+package_managed -.-> malloc
+package_managed -.-> mimalloc
+package_managed -.-> jemalloc
+mimalloc -.-> memory
+jemalloc -.-> memory
+
+style computer fill:#fff,stroke:#333
+style memory fill:#86EFAC,stroke:#333
+style code fill:#67E8F9,stroke:#333;
+style mgr fill:#FDBA74,stroke:#333;
+style pymalloc fill:#FBBF24,stroke:#333;
+style malloc fill:#FBBF24,stroke:#333;
+style package_managed fill:#FBBF24,stroke:#333;
+style mimalloc fill:#FEF08A,stroke:#333;
+style jemalloc fill:#FEF08A,stroke:#333;
+style spacer stroke:none;
+```
+
+_Python code and package dependencies may stipulate the use of additional memory allocators, such as `mimalloc` and `jemalloc` outside of the Python memory manager._
 
 Python provides the capability of customizing memory allocation through the use of packages.
 See below for some notable examples of additional memory allocation possibilities.
