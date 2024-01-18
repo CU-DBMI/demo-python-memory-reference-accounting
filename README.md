@@ -73,7 +73,9 @@ style memory fill:#86EFAC,stroke:#333
 _Computer memory is a type of computer resource available for use by software on a computer_
 
 Computer memory, also sometimes known as "RAM" or "random-access memory", or "dynamic memory" is a type of resource used by computer software on a computer.
-"Computer memory stores information, such as data and programs for immediate use in the computer. ... Main memory operates at a high speed compared to \[non-memory\] storage which is slower but less expensive and \[oftentimes\] higher in capacity. " ([Wikipedia: Computer memory](https://en.wikipedia.org/wiki/Computer_memory)).
+"Computer memory stores information, such as data and programs for immediate use in the computer. ... Main memory operates at a high speed compared to non-memory storage which is slower but less expensive and oftentimes higher in capacity. " ([Wikipedia: Computer memory](https://en.wikipedia.org/wiki/Computer_memory)).
+
+Blocks...
 
 ```mermaid
 flowchart LR
@@ -99,7 +101,8 @@ style memory fill:#86EFAC,stroke:#333
 
 _Memory heaps help organize available memory on a computer for specific procedures. Heaps may have one or many memory pools._
 
-Computer memory is generally organized as ___heaps___ which help describe chunks of the total memory available on a computer for specific processes.
+Computer memory may be organized in hierarchical layers to help share resources among many software procedures.
+One top-level organization model for computer memory is through the use of ___heaps___ which help describe chunks of the total memory available on a computer for specific processes.
 These heaps may be ___private___ (only available to a specific software process) or ___shared___ (available to one or many software processes).
 Heaps can be further segmented into ___pools___ which are areas of the heap which can be used for specific purposes (for example, when multiple memory allocators are used).
 
@@ -259,6 +262,33 @@ One way to understand Python memory allocators is through the following distinct
   When `pymalloc` is disabled or a memory requirements exceed `pymalloc`'s constraints, the Python interpreter will use a function from the [C standard library](https://en.wikipedia.org/wiki/C_standard_library) called [`malloc`](<%5B%60malloc%60%5D(https://en.wikipedia.org/wiki/C_dynamic_memory_allocation)>).
   When `malloc` is used by the Python interpreter, it uses the system's existing implementation of `malloc`.
 
+```mermaid
+flowchart LR
+
+subgraph computer ["Computer (resources)"]
+
+subgraph memory["Memory"]
+    subgraph heap1 ["heap(s)"]
+        direction TB
+        subgraph arena ["pymalloc\narena(s)"]
+          subgraph spacer [" "]
+          pools["pool(s)"]
+          end
+        end
+    end
+end
+
+end
+
+style computer fill:#fff,stroke:#333
+style memory fill:#86EFAC,stroke:#333
+style arena fill:#C7D2FE,stroke:#333
+style spacer fill:transparent,stroke:transparent;
+```
+
+_`pymalloc` makes use of arenas to further organize pools within a computer memory heap._
+
+It's important to note that `pymalloc` adds additional abstractions to how memory is organized through the use of "arenas".
 `pymalloc` may be disabled through the use of a special environment variable called [`PYTHONMALLOC`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONMALLOC) (for example, to use only [`malloc`](https://en.wikipedia.org/wiki/C_dynamic_memory_allocation) as seen below).
 This same environment variable may be used with `debug` settings in order to help troubleshoot in-depth questions.
 
@@ -321,6 +351,40 @@ See below for some notable examples of additional memory allocation possibilitie
   The selection of a memory allocator for use with PyArrow can be influenced by how it performs on a particular system.
 
 ##### Python's Garbage Collection
+
+```mermaid
+flowchart LR
+
+subgraph computer ["Computer"]
+  direction LR
+  memory["Memory"]
+  code["Python code"]
+  malloc["malloc\n(system function)"]
+  subgraph interpreter ["Python interpreter"]
+    subgraph spacer [" "]
+        subgraph mgr ["Python memory manager"]
+            pymalloc["pymalloc"]
+            gc["Garbage\nCollector"]
+        end
+    end
+  end
+end
+
+code --> |interpreted and\nexecuted by| interpreter
+pymalloc --> |"allocates memory for\nsmall and temporary needs"| memory
+mgr --> |"allocates memory for\nlarger or long-lived needs"| malloc
+malloc --> memory
+gc --> |frees memory with\nno object references| memory
+
+style computer fill:#fff,stroke:#333
+style memory fill:#86EFAC,stroke:#333
+style code fill:#67E8F9,stroke:#333;
+style mgr fill:#FDBA74,stroke:#333;
+style pymalloc fill:#FBBF24,stroke:#333;
+style malloc fill:#FBBF24,stroke:#333;
+style gc fill:#FCA5A5,stroke:#333;
+style spacer stroke:none;
+```
 
 Python by default uses an optional garbage collector to automatically deallocate garbage memory through the Python interpreter in CPython.
 "The main garbage collection algorithm used by CPython is reference counting. The basic idea is that CPython counts how many different places there are that have a reference to an object. Such a place could be another object, or a global (or static) C variable, or a local variable in some C function. When an object’s reference count becomes zero, the object is deallocated." ([Python Developer's Guide: Garbage collector design](https://devguide.python.org/internals/garbage-collector/))
