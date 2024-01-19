@@ -138,10 +138,10 @@ style poolc fill:#BFDBFE,stroke:#333;
 
 _Memory heaps help organize available memory on a computer for specific procedures. Heaps may have one or many memory pools._
 
-Computer memory may be organized in hierarchical layers to help share resources among many software procedures.
+Computer memory blocks may be organized in hierarchical layers to manage memory efficiently or towards a specific purpose.
 One top-level organization model for computer memory is through the use of ___heaps___ which help describe chunks of the total memory available on a computer for specific processes.
 These heaps may be ___private___ (only available to a specific software process) or ___shared___ (available to one or many software processes).
-Heaps are sometimes further segmented into ___pools___ which are areas of the heap which can be used for specific purposes (for example, when multiple memory allocators are used).
+Heaps are sometimes further segmented into ___pools___ which are areas of the heap which can be used for specific purposes.
 
 ### Memory Allocator
 
@@ -214,13 +214,16 @@ style code fill:#67E8F9,stroke:#333;
 style interpreter fill:#FDBA74,stroke:#333;
 ```
 
-_The Python interpreter helps execute Python code and allocate memory for Python procedures._
+_A Python interpreter executes Python code and manages memory for Python procedures._
 
 Python is an interpreted "high-level" programming language ([Python: What is Python?](https://www.python.org/doc/essays/blurb/)).
 Interpreted languages are those which include an "interpreter" which helps execute code written in a particular way ([Wikipedia: Interpreter (computing)](<https://en.wikipedia.org/wiki/Interpreter_(computing)>)).
 High-level languages such as Python often remove the requirement for software developers to manually perform memory management ([Wikipedia: High-level programming language](https://en.wikipedia.org/wiki/High-level_programming_language)).
+
 Python code is executed by a commonly pre-packaged and downloaded binary call the Python [interpreter](<https://en.wikipedia.org/wiki/Interpreter_(computing)>).
 The Python interpreter reads Python code and performs memory management as the code is executed.
+The [CPython Python interpreter](https://github.com/python/cpython) is the most commonly used interpreter for Python, and what's use as a reference for other content here.
+There are also other interpreters such as [PyPy](https://www.pypy.org/features.html), [Jython](https://github.com/jython/jython), and [IronPython](https://ironpython.net/) which all handle memory differently than the CPython interpreter.
 
 #### Python's Memory Manager
 
@@ -229,7 +232,9 @@ flowchart LR
 
 subgraph computer ["Computer"]
   direction LR
-  memory["Memory"]
+  subgraph memory["Memory"]
+    pyheap["Python heap"]
+  end
   code["Python code"]
   subgraph interpreter["Python interpreter"]
     manager["Python memory manager"]
@@ -237,7 +242,7 @@ subgraph computer ["Computer"]
 end
 
 code --> |interpreted and\nexecuted by| interpreter
-manager --> |allocates memory\nfor processed code| memory
+manager --> |allocates memory\nfor processed code| pyheap
 
 style computer fill:#fff,stroke:#333
 style memory fill:#86EFAC,stroke:#333
@@ -248,9 +253,10 @@ style manager fill:#FDBA74,stroke:#333;
 _The Python memory manager helps manage memory for Python code executed by the Python interpreter._
 
 Memory is managed for Python software processes automatically (when unspecified) or manually (when specified) through the Python interpreter.
-The ___Python memory manager___ is an abstraction which manages memory for Python software processes through the Python interpreter and CPython ([Python: Memory Management](https://docs.python.org/3/c-api/memory.html)).
+The ___Python memory manager___ is an abstraction which manages memory for Python software processes through the Python interpreter ([Python: Memory Management](https://docs.python.org/3/c-api/memory.html)).
 From a high-level perspective, we assume variables and other operations written in Python will automatically allocate and deallocate memory through the Python interpreter when executed.
-Python's memory manager performs this work through various __memory allocators__ and a __garbage collector__ (or as configured with customizations).
+The Python memory manager .
+Python's memory manager performs work through various __memory allocators__ and a __garbage collector__ (or as configured with customizations) within a __private Python memory heap__.
 
 ##### Python's Memory Allocators
 
@@ -259,9 +265,11 @@ flowchart LR
 
 subgraph computer ["Computer"]
   direction LR
-  memory["Memory"]
+  subgraph memory["Memory"]
+    pyheap["Python heap"]
+  end
   code["Python code"]
-  malloc["malloc\n(system function)"]
+  malloc["C memory functions"]
   subgraph interpreter ["Python interpreter"]
     subgraph spacer [" "]
         subgraph mgr ["Python memory manager"]
@@ -272,9 +280,9 @@ subgraph computer ["Computer"]
 end
 
 code --> |interpreted and\nexecuted by| interpreter
-pymalloc --> |"allocates memory for\nsmall and temporary needs"| memory
+pymalloc --> |"allocates memory for\nsmall and temporary needs"| malloc
 mgr --> |"allocates memory for\nlarger or long-lived needs"| malloc
-malloc --> memory
+malloc --> pyheap
 
 
 style computer fill:#fff,stroke:#333
@@ -294,9 +302,10 @@ One way to understand Python memory allocators is through the following distinct
 
 - __"Python Memory Allocator" (`pymalloc`)__
   The Python interpreter is packaged with a specialized memory allocator called `pymalloc`.
-  "Python has a pymalloc allocator optimized for small objects (smaller or equal to 512 bytes) with a short lifetime." ([Python: Memory Management - The pymalloc allocator](https://docs.python.org/3/c-api/memory.html#the-pymalloc-allocator))
+  "Python has a pymalloc allocator optimized for small objects (smaller or equal to 512 bytes) with a short lifetime." ([Python: Memory Management - The pymalloc allocator](https://docs.python.org/3/c-api/memory.html#the-pymalloc-allocator)).
+  Ultimately, `pymalloc` uses `C malloc` to implement memory work.
 - __C dynamic memory allocator (`malloc`)__
-  When `pymalloc` is disabled or a memory requirements exceed `pymalloc`'s constraints, the Python interpreter will use a function from the [C standard library](https://en.wikipedia.org/wiki/C_standard_library) called [`malloc`](<%5B%60malloc%60%5D(https://en.wikipedia.org/wiki/C_dynamic_memory_allocation)>).
+  When `pymalloc` is disabled or a memory requirements exceed `pymalloc`'s constraints, the Python interpreter will directly use a function from the [C standard library](https://en.wikipedia.org/wiki/C_standard_library) called [`malloc`](<%5B%60malloc%60%5D(https://en.wikipedia.org/wiki/C_dynamic_memory_allocation)>).
   When `malloc` is used by the Python interpreter, it uses the system's existing implementation of `malloc`.
 
 ```mermaid
@@ -305,11 +314,13 @@ flowchart LR
 subgraph computer ["Computer (resources)"]
 
 subgraph memory["Memory"]
-    subgraph heap1 ["heap(s)"]
+    subgraph heap1 ["heap"]
         direction TB
         subgraph arena ["pymalloc\narena(s)"]
           subgraph spacer [" "]
-          pools["pool(s)"]
+            subgraph pools["pool(s)"]
+              blocks["blocks"]
+            end
           end
         end
     end
@@ -319,13 +330,15 @@ end
 
 style computer fill:#fff,stroke:#333
 style memory fill:#86EFAC,stroke:#333
-style arena fill:#C7D2FE,stroke:#333
+style arena fill:#D8B4FE,stroke:#333
+style pools fill:#C7D2FE,stroke:#333
 style spacer fill:transparent,stroke:transparent;
 ```
 
 _`pymalloc` makes use of arenas to further organize pools within a computer memory heap._
 
 It's important to note that `pymalloc` adds additional abstractions to how memory is organized through the use of "arenas".
+These arenas are specific to `pymalloc` purposes.
 `pymalloc` may be disabled through the use of a special environment variable called [`PYTHONMALLOC`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONMALLOC) (for example, to use only [`malloc`](https://en.wikipedia.org/wiki/C_dynamic_memory_allocation) as seen below).
 This same environment variable may be used with `debug` settings in order to help troubleshoot in-depth questions.
 
@@ -336,9 +349,11 @@ flowchart LR
 
 subgraph computer ["Computer"]
   direction LR
-  memory["Memory"]
+  subgraph memory["Memory"]
+    pyheap["Python heap"]
+  end
   code["Python code"]
-  malloc["malloc\n(system function)"]
+  malloc["C memory functions"]
   subgraph interpreter ["Python interpreter"]
     subgraph spacer [" "]
         subgraph mgr ["Python memory manager"]
@@ -347,20 +362,20 @@ subgraph computer ["Computer"]
     end
     package_managed["Python package\nmanaged allocators\n(ex. NumPy, PyArrow, etc.)"]
   end
-  mimalloc["mimalloc"]
-  jemalloc["jemalloc"]
+  mimalloc["mimalloc memory functions"]
+  jemalloc["jemalloc memory functions"]
 end
 
 code --> |interpreted and\nexecuted by| interpreter
-pymalloc <--> |"allocates memory for\nsmall and temporary needs"| memory
+pymalloc --> |"allocates memory for\nsmall and temporary needs"| malloc
 mgr --> |"allocates memory for\nlarger or long-lived needs"| malloc
-malloc --> memory
+malloc --> pyheap
 code -.-> |may stipulate\nthe use of| package_managed
 package_managed -.-> malloc
 package_managed -.-> mimalloc
 package_managed -.-> jemalloc
-mimalloc -.-> memory
-jemalloc -.-> memory
+mimalloc -.-> pyheap
+jemalloc -.-> pyheap
 
 style computer fill:#fff,stroke:#333
 style memory fill:#86EFAC,stroke:#333
@@ -387,6 +402,53 @@ See below for some notable examples of additional memory allocation possibilitie
   A default memory allocator is selected for use when PyArrow based on the operating system and the availability of the memory allocator on the system.
   The selection of a memory allocator for use with PyArrow can be influenced by how it performs on a particular system.
 
+##### Python Reference Counting
+
+<table>
+<tr><th>Processed line of code</th><th>Reference count</th></tr>
+<tr>
+
+<td>
+
+```python
+a_string = "cornucopia"
+```
+
+</td>
+<td>
+a_string: 1
+</td>
+<tr>
+<td>
+
+```python
+a_list = [a_string]
+```
+
+</td>
+<td>
+a_string: 2
+</td>
+</tr>
+<tr>
+<td>
+
+```python
+sys = [a_string]
+```
+
+</td>
+<td>
+a_string: 2
+</td>
+</tr>
+
+</table>
+
+As computer memory is allocated to Python processes the Python memory manager keeps track of these through the use of a [reference counter](https://en.wikipedia.org/wiki/Reference_counting).
+In Python, we could label this as an "\[Object\] reference counter" because all data in Python is represented by objects ([Python: Data model](https://docs.python.org/3/reference/datamodel.html#objects-values-and-types)).
+"... CPython counts how many different places there are that have a reference to an object. Such a place could be another object, or a global (or static) C variable, or a local variable in some C function." ([Python Developer's Guide: Garbage collector design](https://devguide.python.org/internals/garbage-collector/)).
+
 ##### Python's Garbage Collection
 
 ```mermaid
@@ -394,9 +456,11 @@ flowchart LR
 
 subgraph computer ["Computer"]
   direction LR
-  memory["Memory"]
+  subgraph memory["Memory"]
+    pyheap["Python heap"]
+  end
   code["Python code"]
-  malloc["malloc\n(system function)"]
+  malloc["C memory functions"]
   subgraph interpreter ["Python interpreter"]
     subgraph spacer [" "]
         subgraph mgr ["Python memory manager"]
@@ -408,10 +472,10 @@ subgraph computer ["Computer"]
 end
 
 code --> |interpreted and\nexecuted by| interpreter
-pymalloc --> |"allocates memory for\nsmall and temporary needs"| memory
+pymalloc --> |"allocates memory for\nsmall and temporary needs"| malloc
 mgr --> |"allocates memory for\nlarger or long-lived needs"| malloc
-malloc --> memory
-gc --> |frees memory with\nno object references| memory
+malloc --> pyheap
+gc --> |"frees memory with\nno object references\n(including C, mimalloc,\n jemalloc and other \nfunction allocated memory)"| pyheap
 
 style computer fill:#fff,stroke:#333
 style memory fill:#86EFAC,stroke:#333
@@ -426,12 +490,37 @@ style spacer stroke:none;
 _The Python garbage collector works as part of the Python memory manager to free memory which is no longer needed (based on reference count)._
 
 Python by default uses an optional garbage collector to automatically deallocate garbage memory through the Python interpreter in CPython.
-"The main garbage collection algorithm used by CPython is reference counting. The basic idea is that CPython counts how many different places there are that have a reference to an object. Such a place could be another object, or a global (or static) C variable, or a local variable in some C function. When an object’s reference count becomes zero, the object is deallocated." ([Python Developer's Guide: Garbage collector design](https://devguide.python.org/internals/garbage-collector/))
-Python's garbage collector is generally focused on collecting garbage created by `pymalloc` and `malloc`.
+"When an object’s reference count becomes zero, the object is deallocated." ([Python Developer's Guide: Garbage collector design](https://devguide.python.org/internals/garbage-collector/))
+Python's garbage collector focuses on collecting garbage created by `pymalloc`, C memory functions, as well as other memory allocators like `mimalloc` and `jemalloc`.
+
+##### Python Tools for Observing Memory Behavior
+
+###### Python Built-in Tools
+
+```python
+import gc
+import sys
+
+# set gc in debug mode for detecting memory leaks
+gc.set_debug(gc.DEBUG_LEAK)
+
+# create an int object
+an_object = 1
+
+# show the number of uncollectable references via COLLECTED
+COLLECTED = gc.collect()
+
+# show the reference count for an object
+sys.getrefcount(an_object)
+```
 
 The [`gc` module](https://docs.python.org/3/library/gc.html) provides an interface to the Python garbage collector.
 In addition, the [`sys` module](https://docs.python.org/3/library/sys.html) provides many functions which provide information about references and other details about Python objects as they are executed through the interpreter.
 These functions and other packages can help software developers observe memory behaviors within Python procedures.
+
+###### Python Package: Memray
+
+Mem
 
 ## Development
 
