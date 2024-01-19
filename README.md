@@ -75,7 +75,35 @@ _Computer memory is a type of computer resource available for use by software on
 Computer memory, also sometimes known as "RAM" or "random-access memory", or "dynamic memory" is a type of resource used by computer software on a computer.
 "Computer memory stores information, such as data and programs for immediate use in the computer. ... Main memory operates at a high speed compared to non-memory storage which is slower but less expensive and oftentimes higher in capacity. " ([Wikipedia: Computer memory](https://en.wikipedia.org/wiki/Computer_memory)).
 
-Blocks...
+<table>
+<tr><th colspan="2">Memory Blocks</th></tr>
+<tr>
+<td>
+
+<strong>A.)</strong> All memory blocks available.
+
+<table>
+<tr><td>Block</td><td>Block</td><td>Block</td></tr>
+</table>
+
+</td>
+<td>
+
+<strong>B.)</strong> Some memory blocks in use.
+
+<table>
+<tr><td style="background:#86EFAC;">Block</td><td style="background:#86EFAC;">Block</td><td>Block</td></tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+_Fixed-size memory blocks may be free or used at various times._
+
+One way to organize computer memory is through the use of ["fixed-size blocks"](https://en.wikipedia.org/wiki/Memory_management#FIXED-SIZE), also called "blocks".
+Fixed-size memory blocks are chunks of memory of a certain byte size (usually all the same size).
+Memory blocks may be in use or free at different times.
 
 ```mermaid
 flowchart LR
@@ -85,11 +113,17 @@ subgraph computer ["Computer (resources)"]
 subgraph memory["Memory"]
     subgraph heap1 ["heap 1"]
         direction TB
-        poola["pool a"]
-        poolb["pool b"]
+        subgraph poola["pool a"]
+          blocks1["blocks"]
+        end
+        subgraph poolb["pool b"]
+          blocks2["blocks"]
+        end
     end
     subgraph heap2 ["heap 2"]
-        poola2["pool c"]
+        subgraph poolc["pool c"]
+          blocks3["blocks"]
+        end
     end
 end
 
@@ -97,6 +131,9 @@ end
 
 style computer fill:#fff,stroke:#333
 style memory fill:#86EFAC,stroke:#333
+style poola fill:#BFDBFE,stroke:#333;
+style poolb fill:#BFDBFE,stroke:#333;
+style poolc fill:#BFDBFE,stroke:#333;
 ```
 
 _Memory heaps help organize available memory on a computer for specific procedures. Heaps may have one or many memory pools._
@@ -104,7 +141,7 @@ _Memory heaps help organize available memory on a computer for specific procedur
 Computer memory may be organized in hierarchical layers to help share resources among many software procedures.
 One top-level organization model for computer memory is through the use of ___heaps___ which help describe chunks of the total memory available on a computer for specific processes.
 These heaps may be ___private___ (only available to a specific software process) or ___shared___ (available to one or many software processes).
-Heaps can be further segmented into ___pools___ which are areas of the heap which can be used for specific purposes (for example, when multiple memory allocators are used).
+Heaps are sometimes further segmented into ___pools___ which are areas of the heap which can be used for specific purposes (for example, when multiple memory allocators are used).
 
 ### Memory Allocator
 
