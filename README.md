@@ -423,6 +423,8 @@ style gc fill:#FCA5A5,stroke:#333;
 style spacer stroke:none;
 ```
 
+_The Python garbage collector works as part of the Python memory manager to free memory which is no longer needed (based on reference count)._
+
 Python by default uses an optional garbage collector to automatically deallocate garbage memory through the Python interpreter in CPython.
 "The main garbage collection algorithm used by CPython is reference counting. The basic idea is that CPython counts how many different places there are that have a reference to an object. Such a place could be another object, or a global (or static) C variable, or a local variable in some C function. When an object’s reference count becomes zero, the object is deallocated." ([Python Developer's Guide: Garbage collector design](https://devguide.python.org/internals/garbage-collector/))
 Python's garbage collector is generally focused on collecting garbage created by `pymalloc` and `malloc`.
