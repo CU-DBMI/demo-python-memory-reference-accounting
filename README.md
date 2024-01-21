@@ -97,9 +97,32 @@ Computer memory, also sometimes known as "RAM" or "random-access memory", or "dy
 
 </td>
 </tr>
+<tr>
+<td colspan="2" style="text-align:center;font-weight:bold;">Practical analogy</td>
+</tr>
+<tr>
+<td>
+
+<strong>C.)</strong> You have limited buckets to hold things.
+
+<table>
+<tr><td>🪣</td><td>🪣</td><td>🪣</td></tr>
 </table>
 
-_Fixed-size memory blocks may be free or used at various times._
+</td>
+<td>
+
+<strong>D.)</strong> Two buckets are used, the other remains empty.
+
+<table>
+<tr><td style="background:#86EFAC;">🪣</td><td style="background:#86EFAC;">🪣</td><td>🪣</td></tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+_Fixed-size memory blocks may be free or used at various times. They can be thought of like reusable buckets to hold things._
 
 One way to organize computer memory is through the use of ["fixed-size blocks"](https://en.wikipedia.org/wiki/Memory_management#FIXED-SIZE), also called "blocks".
 Fixed-size memory blocks are chunks of memory of a certain byte size (usually all the same size).
@@ -422,31 +445,35 @@ a_string: 1
 <td>
 
 ```python
-a_list = [a_string]
+reference_a_string = a_string
 ```
 
 </td>
 <td>
-a_string: 2
+a_string: 2<br>
+(Because `a_string` is now referenced twice.)
 </td>
 </tr>
 <tr>
 <td>
 
 ```python
-sys = [a_string]
+del reference_a_string
 ```
 
 </td>
 <td>
-a_string: 2
+a_string: 1<br>
+(Because the additional reference has been deleted.)
 </td>
 </tr>
 
 </table>
 
+_Python reference counting at a simple level works through the use of object reference increments and decrements._
+
 As computer memory is allocated to Python processes the Python memory manager keeps track of these through the use of a [reference counter](https://en.wikipedia.org/wiki/Reference_counting).
-In Python, we could label this as an "\[Object\] reference counter" because all data in Python is represented by objects ([Python: Data model](https://docs.python.org/3/reference/datamodel.html#objects-values-and-types)).
+In Python, we could label this as an "Object reference counter" because all data in Python is represented by objects ([Python: Data model](https://docs.python.org/3/reference/datamodel.html#objects-values-and-types)).
 "... CPython counts how many different places there are that have a reference to an object. Such a place could be another object, or a global (or static) C variable, or a local variable in some C function." ([Python Developer's Guide: Garbage collector design](https://devguide.python.org/internals/garbage-collector/)).
 
 ##### Python's Garbage Collection
@@ -509,18 +536,31 @@ an_object = 1
 
 # show the number of uncollectable references via COLLECTED
 COLLECTED = gc.collect()
+print(f"Uncollectable garbage references: {COLLECTED}")
 
 # show the reference count for an object
-sys.getrefcount(an_object)
+print(f"Reference count of `an_object`: {sys.getrefcount(an_object)}")
 ```
 
 The [`gc` module](https://docs.python.org/3/library/gc.html) provides an interface to the Python garbage collector.
 In addition, the [`sys` module](https://docs.python.org/3/library/sys.html) provides many functions which provide information about references and other details about Python objects as they are executed through the interpreter.
 These functions and other packages can help software developers observe memory behaviors within Python procedures.
 
+###### Python Package: Scalene
+
+[Scalene](https://github.com/plasma-umass/scalene) is a Python package for analyzing memory, CPU, and GPU resource consumption.
+It provides a web interface to help visualize and understand how resources are consumed.
+Scalene provides suggestions on which portions of your code to troubleshoot.
+
 ###### Python Package: Memray
 
-Mem
+![](memray-flamegraph.png)
+
+_Memray provides the ability to create and view flamegraphs which show how memory was consumed as a procedure executed._
+
+[Memray](https://github.com/bloomberg/memray) is a Python package to track memory allocation within Python and compiled extension modules.
+Memray provides a high-level way to investigate memory performance and adds visualizations such as [flamegraphs](https://www.brendangregg.com/flamegraphs.html)(which contextualization of [stack traces](https://en.wikipedia.org/wiki/Stack_trace) and memory allocations in one spot).
+Memray seeks to provide a way to overcome challenges with tracking and understanding Python and other memory allocators (such as C, C++, or Rust libraries used in tandem with a Python process).
 
 ## Development
 
