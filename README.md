@@ -548,9 +548,14 @@ These functions and other packages can help software developers observe memory b
 
 ###### Python Package: Scalene
 
+![](scalene-web-interface.png)
+
+_Scalene provides a web interface to analyze memory, CPU, and GPU resource consumption in one spot alongside suggested areas of concern._
+
 [Scalene](https://github.com/plasma-umass/scalene) is a Python package for analyzing memory, CPU, and GPU resource consumption.
-It provides a web interface to help visualize and understand how resources are consumed.
-Scalene provides suggestions on which portions of your code to troubleshoot.
+It provides [a web interface](https://github.com/plasma-umass/scalene?tab=readme-ov-file#web-based-gui) to help visualize and understand how resources are consumed.
+Scalene provides suggestions on which portions of your code to troubleshoot through the web interface.
+Scalene can also be configured to work with [OpenAI](https://en.wikipedia.org/wiki/OpenAI) [LLM's](https://en.wikipedia.org/wiki/Large_language_model) by way of a an [OpenAI API  provided by the user](https://github.com/plasma-umass/scalene?tab=readme-ov-file#ai-powered-optimization-suggestions).
 
 ###### Python Package: Memray
 
